@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta de Seguimiento Laboral</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F4F6FA; color: #1a1a2e; min-height: 100vh; }
+  .page { max-width: 740px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #64748B; text-decoration: none; margin-bottom: 1.25rem; }
+  .back-link:hover { color: #1A56DB; }
+  .back-link svg { width: 14px; height: 14px; }
+
+  .header { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .badge { background: #F0FDF4; color: #166534; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; text-transform: uppercase; }
+  .proto-badge { background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+  .header h1 { font-size: 22px; font-weight: 600; color: #0F172A; }
+  .header p { font-size: 13px; color: #64748B; margin-top: 4px; }
+  .case-tag { display: inline-block; background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #475569; font-weight: 500; margin-top: 8px; }
+
+  /* Consulta anterior (read-only) */
+  .prev-section { background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .prev-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid #F1F5F9; }
+  .prev-num { width: 28px; height: 28px; border-radius: 50%; background: #F1F5F9; color: #64748B; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .prev-title { font-size: 15px; font-weight: 600; color: #475569; }
+  .prev-subtitle { font-size: 11px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .prev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .prev-item label { font-size: 11px; color: #94A3B8; display: block; margin-bottom: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+  .prev-item .val { font-size: 14px; color: #334155; font-weight: 500; }
+  .prev-tag { display: inline-block; background: #EBF4FF; color: #1E40AF; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; }
+
+  .section { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .section-head { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; }
+  .section-num { width: 28px; height: 28px; border-radius: 50%; background: #F0FDF4; color: #166534; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-size: 15px; font-weight: 600; color: #0F172A; }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  label.field-label { display: block; font-size: 13px; color: #475569; margin-bottom: 5px; font-weight: 500; }
+  input[type=text], input[type=date], input[type=datetime-local], select, textarea {
+    width: 100%; font-size: 14px; font-family: inherit; color: #0F172A;
+    border: 1px solid #CBD5E1; border-radius: 8px; padding: 9px 12px;
+    background: #fff; transition: border-color .15s;
+    appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #22C55E; box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+  textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .inline-field { display: flex; align-items: center; gap: 16px; justify-content: space-between; margin-bottom: 10px; }
+  .inline-field .field-label-inline { font-size: 13px; color: #334155; flex: 1; }
+  .radio-row { display: flex; gap: 14px; flex-shrink: 0; }
+  .radio-opt { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; color: #334155; white-space: nowrap; }
+  .radio-opt input[type=radio] { width: 16px; height: 16px; accent-color: #16A34A; cursor: pointer; }
+
+  /* Tabla plan farmacológico */
+  .farm-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  .farm-table th { background: #F8FAFC; color: #64748B; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; text-align: left; border-bottom: 1px solid #E2E8F0; }
+  .farm-table td { padding: 6px 6px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+  .farm-table input[type=text] { padding: 6px 8px; font-size: 13px; border-radius: 6px; }
+  .farm-table input.dose { width: 70px; }
+  .farm-table input.total { width: 60px; background: #F8FAFC; }
+  .farm-table .sintomas { display: flex; gap: 4px; flex-wrap: wrap; }
+  .sint-tag { display: inline-flex; align-items: center; gap: 4px; background: #EBF4FF; border: 1px solid #BFDBFE; border-radius: 20px; padding: 3px 8px; font-size: 11px; color: #1E40AF; }
+  .sint-tag button { background: none; border: none; cursor: pointer; color: #93C5FD; font-size: 13px; line-height: 1; padding: 0; }
+  .add-farm-row { display: flex; gap: 8px; margin-top: 12px; }
+  .add-farm-row input { flex: 1; }
+  .add-farm-row button { flex-shrink: 0; background: #16A34A; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .add-farm-row button:hover { background: #15803D; }
+  .del-btn { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: 16px; padding: 2px 4px; }
+  .del-btn:hover { color: #EF4444; }
+
+  .sub { margin-left: 12px; margin-top: 8px; padding: 12px 14px; border-left: 3px solid #BBF7D0; border-radius: 0 8px 8px 0; background: #F0FDF4; display: none; }
+  .sub.visible { display: block; }
+
+  .conclusion-preview { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #166534; line-height: 1.6; margin-top: 10px; display: none; }
+  .conclusion-preview.no { background: #FFF7ED; border-color: #FED7AA; color: #9A3412; }
+  .conclusion-preview.visible { display: block; }
+
+  .next-appt { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 1rem; margin-top: 14px; display: none; }
+  .next-appt.visible { display: block; }
+  .next-appt-title { font-size: 12px; font-weight: 600; color: #92400E; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .modalidad-row { display: flex; gap: 14px; margin-top: 6px; }
+  .radio-opt input[type=radio].green { accent-color: #92400E; }
+
+  .feedback-section { background: #EBF4FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .feedback-section label.field-label { color: #1E40AF; }
+  .rating-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+  .rating-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .rating-opt input { width: 18px; height: 18px; accent-color: #1A56DB; }
+  .rating-opt span { font-size: 22px; }
+  .rating-opt small { font-size: 11px; color: #64748B; }
+
+  .actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn-cancel { background: none; border: 1px solid #CBD5E1; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-family: inherit; cursor: pointer; color: #64748B; font-weight: 500; }
+  .btn-cancel:hover { background: #F8FAFC; }
+  .btn-save { background: #16A34A; border: none; border-radius: 8px; padding: 10px 28px; font-size: 14px; font-family: inherit; cursor: pointer; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .btn-save:hover { background: #15803D; }
+  .btn-save:disabled { background: #86EFAC; cursor: not-allowed; }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .prev-grid { grid-template-columns: 1fr; }
+    .inline-field { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .farm-table { font-size: 12px; }
+    .farm-table input.dose { width: 55px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-link">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Volver al inicio
+  </a>
+
+  <div class="header">
+    <div class="header-top">
+      <span class="badge">Seguimiento laboral</span>
+      <span class="proto-badge">Prototipo · validación</span>
+    </div>
+    <h1>Consulta de seguimiento laboral</h1>
+    <p>Nueva prestación · Se genera cuando el paciente no está en condiciones de reincorporarse</p>
+    <span class="case-tag">Caso N° · (a completar en producción)</span>
+  </div>
+
+  <form id="main-form" action="https://formspree.io/f/xgodrpqk" method="POST">
+
+    <!-- CONSULTA ANTERIOR (simulada, read-only) -->
+    <div class="prev-section">
+      <div class="prev-head">
+        <div class="prev-num">↩</div>
+        <span class="prev-title">Evaluación inicial — datos del colaborador</span>
+      </div>
+      <p style="font-size:12px;color:#94A3B8;margin-bottom:12px">Estos datos provienen de la evaluación clínica previa y no son editables en esta pantalla.</p>
+      <div class="prev-grid">
+        <div class="prev-item"><label>Nombre y apellido</label><span class="val">ALAM, VALERIA MAGALI</span></div>
+        <div class="prev-item"><label>DNI</label><span class="val">27.657.010</span></div>
+        <div class="prev-item"><label>Empresa</label><span class="val">Telefónica</span></div>
+        <div class="prev-item"><label>Puesto laboral</label><span class="val">Call center</span></div>
+        <div class="prev-item"><label>Fecha evaluación inicial</label><span class="val">29/04/2026</span></div>
+        <div class="prev-item"><label>Fecha de baja laboral</label><span class="val">Noviembre 2025</span></div>
+      </div>
+      <div style="margin-bottom:8px"><span class="prev-subtitle">Diagnóstico de la evaluación inicial</span><br>
+        <span class="prev-tag">Trastorno depresivo persistente (F34.1)</span>
+      </div>
+      <div>
+        <span class="prev-subtitle">Descripción del caso</span>
+        <p style="font-size:13px;color:#475569;line-height:1.6"><strong>Puesto:</strong> Callcenter. <strong>Tareas:</strong> Administrativas en general. Uso prolongado de la voz. Atención de clientes de forma personal y telefónica.</p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: PLAN FARMACOLÓGICO -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <span class="section-title">Plan farmacológico actualizado</span>
+      </div>
+      <table class="farm-table" id="farm-table">
+        <thead>
+          <tr>
+            <th>Fármaco</th>
+            <th>Mañana</th>
+            <th>Mediodía</th>
+            <th>Tarde</th>
+            <th>Noche</th>
+            <th>Total/día</th>
+            <th>Síntomas target</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="farm-body">
+          <tr>
+            <td><input type="text" name="farm_nombre_1" placeholder="Nombre fármaco" style="min-width:130px"></td>
+            <td><input type="text" class="dose" name="farm_m_1" placeholder="mg"></td>
+            <td><input type="text" class="dose" name="farm_me_1" placeholder="mg"></td>
+            <td><input type="text" class="dose" name="farm_t_1" placeholder="mg"></td>
+            <td><input type="text" class="dose" name="farm_n_1" placeholder="mg"></td>
+            <td><input type="text" class="total" name="farm_tot_1" placeholder="mg" readonly></td>
+            <td><div class="sintomas" id="sint_1"></div><div style="display:flex;gap:4px;margin-top:4px"><input type="text" id="sint_input_1" placeholder="+ síntoma" style="font-size:12px;padding:5px 8px"><button type="button" onclick="addSint(1)" style="background:#EBF4FF;border:1px solid #BFDBFE;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;color:#1E40AF">+</button></div></td>
+            <td><button type="button" class="del-btn" onclick="deleteRow(this)" title="Eliminar">×</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="add-farm-row">
+        <input type="text" id="new-farm-name" placeholder="Agregar fármaco (ej: Sertralina)">
+        <button type="button" onclick="addFarmRow()">+ Agregar fármaco</button>
+      </div>
+      <input type="hidden" name="plan_farmacologico_json" id="farm-json">
+    </div>
+
+    <!-- SECCIÓN 2: ÚLTIMO CERTIFICADO -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <span class="section-title">Último certificado de baja laboral</span>
+      </div>
+      <div class="grid3">
+        <div class="field"><label class="field-label">Fecha del certificado (dd/mm/aa)</label><input type="text" name="cert_fecha" placeholder="dd/mm/aa"></div>
+        <div class="field"><label class="field-label">Médico</label><input type="text" name="cert_medico" placeholder="Nombre del médico"></div>
+        <div class="field"><label class="field-label">Diagnóstico del certificado</label><input type="text" name="cert_diagnostico" placeholder="Diagnóstico"></div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: SINTOMATOLOGÍA ACTUAL -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <span class="section-title">Sintomatología y tratamientos actuales</span>
+      </div>
+      <div class="field"><textarea name="sintomatologia_actual" placeholder="Describa la sintomatología actual del paciente y los tratamientos en curso..."></textarea></div>
+    </div>
+
+    <!-- SECCIÓN 4: CONCLUSIÓN -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <span class="section-title">Conclusión de la consulta</span>
+      </div>
+
+      <div class="inline-field">
+        <span class="field-label-inline">¿Está en condiciones de volver a trabajar?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="apto_trabajar" value="Sí" onchange="updateConclusion()"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="apto_trabajar" value="No" onchange="updateConclusion()"> No</label>
+        </div>
+      </div>
+
+      <div class="inline-field" id="mismo-puesto-row" style="display:none">
+        <span class="field-label-inline">¿Está en condiciones de volver a trabajar en el mismo puesto?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="apto_mismo_puesto" value="Sí"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="apto_mismo_puesto" value="No"> No</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Diagnóstico</label>
+        <select name="diagnostico" onchange="updateConclusion()">
+          <option value="">Seleccionar</option>
+          <option value="Sin diagnóstico compatible">Sin diagnóstico compatible</option>
+          <option value="Trastorno delirante (F22)">Trastorno delirante (F22)</option>
+          <option value="Trastorno psicótico breve (F23)">Trastorno psicótico breve (F23)</option>
+          <option value="Trastorno Esquizofreniforme (F20.81)">Trastorno Esquizofreniforme (F20.81)</option>
+          <option value="Esquizofrenia (F20.9)">Esquizofrenia (F20.9)</option>
+          <option value="Trastorno de desregulación destructiva del estado de ánimo (F34.8)">Trastorno de desregulación destructiva del estado de ánimo (F34.8)</option>
+          <option value="Trastorno depresivo persistente (F34.1)" selected>Trastorno depresivo persistente (F34.1)</option>
+          <option value="Otro trastorno depresivo especificado (F32.8)">Otro trastorno depresivo especificado (F32.8)</option>
+          <option value="Otro trastorno depresivo no especificado (F32.9)">Otro trastorno depresivo no especificado (F32.9)</option>
+          <option value="Trastorno de ansiedad por separación (F93.0)">Trastorno de ansiedad por separación (F93.0)</option>
+          <option value="Trastorno de ansiedad social — fobia social (F40.10)">Trastorno de ansiedad social — fobia social (F40.10)</option>
+          <option value="Trastorno de pánico (F41.0)">Trastorno de pánico (F41.0)</option>
+          <option value="Trastorno de ansiedad generalizada (F41.1)">Trastorno de ansiedad generalizada (F41.1)</option>
+          <option value="Trastorno obsesivo-compulsivo (F42)">Trastorno obsesivo-compulsivo (F42)</option>
+          <option value="Trastorno adaptativo (F43.2)">Trastorno adaptativo (F43.2)</option>
+          <option value="Trastorno dismórfico corporal (F45.22)">Trastorno dismórfico corporal (F45.22)</option>
+          <option value="Otros trastornos">Otros trastornos</option>
+        </select>
+      </div>
+
+      <div class="field"><label class="field-label">Aclaración</label><textarea name="aclaracion" placeholder="Ingrese aquí el detalle..."></textarea></div>
+
+      <div class="conclusion-preview" id="concl-preview"></div>
+
+      <!-- Próxima consulta (solo si NO puede volver) -->
+      <div class="next-appt" id="next-appt">
+        <div class="next-appt-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Programar próxima consulta
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Fecha y hora de la próxima consulta</label><input type="datetime-local" name="proxima_consulta_fecha"></div>
+          <div class="field"><label class="field-label">Modalidad</label>
+            <div class="modalidad-row" style="margin-top:10px">
+              <label class="radio-opt"><input type="radio" name="modalidad_consulta" value="Virtual"> Virtual</label>
+              <label class="radio-opt"><input type="radio" name="modalidad_consulta" value="Presencial"> Presencial</label>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Agenda del día</label><input type="text" name="agenda_dia" placeholder="Notas para la próxima consulta"></div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="feedback-section">
+      <div class="section-head" style="border-color:#BFDBFE">
+        <div class="section-num" style="background:#DBEAFE;color:#1D4ED8">💬</div>
+        <span class="section-title" style="color:#1D4ED8">Tu opinión sobre este formulario</span>
+      </div>
+      <div class="field"><label class="field-label">¿Qué campos o secciones te resultaron confusos o incompletos?</label><textarea name="feedback_confuso" placeholder="Ej: falta mostrar más datos de la evaluación anterior, el plan farmacológico es muy complejo..."></textarea></div>
+      <div class="field"><label class="field-label">¿Falta algún dato importante para el seguimiento?</label><textarea name="feedback_faltante" placeholder="Ej: debería poder ver el historial de consultas anteriores, falta campo de evolución..."></textarea></div>
+      <div class="field">
+        <label class="field-label">¿Cómo calificarías la claridad general del formulario?</label>
+        <div class="rating-row">
+          <label class="rating-opt"><input type="radio" name="claridad" value="1 — Muy confuso"><span>😕</span><small>Muy confuso</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="2 — Regular"><span>😐</span><small>Regular</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="3 — Claro"><span>🙂</span><small>Claro</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="4 — Muy claro"><span>😀</span><small>Muy claro</small></label>
+        </div>
+      </div>
+      <div class="field"><label class="field-label">Tu nombre o rol (opcional)</label><input type="text" name="evaluador_nombre" placeholder="Ej: Dra. García — Psiquiatra"></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-cancel" onclick="if(confirm('¿Cancelar?')) history.back()">Cancelar</button>
+      <button type="submit" class="btn-save" id="btn-submit">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar consulta
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+// Conclusión dinámica
+function updateConclusion() {
+  var diag = document.querySelector('select[name="diagnostico"]').value;
+  var volver = document.querySelector('input[name="apto_trabajar"]:checked');
+  var box = document.getElementById('concl-preview');
+  var nextAppt = document.getElementById('next-appt');
+  var mismoPuesto = document.getElementById('mismo-puesto-row');
+  box.className = 'conclusion-preview';
+  box.textContent = '';
+  nextAppt.classList.remove('visible');
+  if (!volver) return;
+  if (volver.value === 'Sí') {
+    mismoPuesto.style.display = '';
+    if (diag === 'Sin diagnóstico compatible') {
+      box.textContent = 'No impresiona presentar sintomatología psicopatológica nomenclada en el DSM. Actualmente está en condiciones de reincorporarse a la actividad laboral.';
+    } else if (diag) {
+      box.textContent = 'Actualmente está en condiciones de reincorporarse a la actividad laboral.';
+    }
+  } else {
+    mismoPuesto.style.display = 'none';
+    box.textContent = 'A partir de la evaluación, el paciente no se encuentra en condiciones de retomar su actividad laboral. Se programa nueva consulta de seguimiento.';
+    box.classList.add('no');
+    nextAppt.classList.add('visible');
+  }
+  if (box.textContent) box.classList.add('visible');
+}
+
+// Plan farmacológico
+var rowCount = 1;
+var sintData = { 1: [] };
+
+function addFarmRow() {
+  var nombre = document.getElementById('new-farm-name').value.trim();
+  rowCount++;
+  sintData[rowCount] = [];
+  var tbody = document.getElementById('farm-body');
+  var n = rowCount;
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" name="farm_nombre_' + n + '" value="' + (nombre||'') + '" placeholder="Nombre fármaco" style="min-width:130px"></td>' +
+    '<td><input type="text" class="dose" name="farm_m_' + n + '" placeholder="mg"></td>' +
+    '<td><input type="text" class="dose" name="farm_me_' + n + '" placeholder="mg"></td>' +
+    '<td><input type="text" class="dose" name="farm_t_' + n + '" placeholder="mg"></td>' +
+    '<td><input type="text" class="dose" name="farm_n_' + n + '" placeholder="mg"></td>' +
+    '<td><input type="text" class="total" name="farm_tot_' + n + '" placeholder="mg" readonly></td>' +
+    '<td><div class="sintomas" id="sint_' + n + '"></div><div style="display:flex;gap:4px;margin-top:4px"><input type="text" id="sint_input_' + n + '" placeholder="+ síntoma" style="font-size:12px;padding:5px 8px"><button type="button" onclick="addSint(' + n + ')" style="background:#EBF4FF;border:1px solid #BFDBFE;border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;color:#1E40AF">+</button></div></td>' +
+    '<td><button type="button" class="del-btn" onclick="deleteRow(this)" title="Eliminar">×</button></td>';
+  tbody.appendChild(tr);
+  document.getElementById('new-farm-name').value = '';
+}
+
+function deleteRow(btn) {
+  btn.closest('tr').remove();
+}
+
+function addSint(rowId) {
+  var inp = document.getElementById('sint_input_' + rowId);
+  var val = inp.value.trim();
+  if (!val) return;
+  sintData[rowId] = sintData[rowId] || [];
+  sintData[rowId].push(val);
+  renderSints(rowId);
+  inp.value = '';
+}
+function removeSint(rowId, i) {
+  sintData[rowId].splice(i, 1);
+  renderSints(rowId);
+}
+function renderSints(rowId) {
+  var container = document.getElementById('sint_' + rowId);
+  if (!container) return;
+  container.innerHTML = (sintData[rowId] || []).map(function(s, i) {
+    return '<span class="sint-tag">' + s + '<button type="button" onclick="removeSint(' + rowId + ',' + i + ')">×</button></span>';
+  }).join('');
+}
+
+document.getElementById('main-form').addEventListener('submit', function() {
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+});
+</script>
+</body>
+</html>
