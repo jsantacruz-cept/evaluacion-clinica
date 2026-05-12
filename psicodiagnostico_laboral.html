@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psicodiagnóstico Laboral</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F4F6FA; color: #1a1a2e; min-height: 100vh; }
+  .page { max-width: 740px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #64748B; text-decoration: none; margin-bottom: 1.25rem; }
+  .back-link:hover { color: #7C3AED; }
+  .back-link svg { width: 14px; height: 14px; }
+
+  .header { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .badge { background: #F5F3FF; color: #6D28D9; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; text-transform: uppercase; }
+  .proto-badge { background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+  .header h1 { font-size: 22px; font-weight: 600; color: #0F172A; }
+  .header p { font-size: 13px; color: #64748B; margin-top: 4px; }
+
+  .section { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .section-head { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; }
+  .section-num { width: 28px; height: 28px; border-radius: 50%; background: #F5F3FF; color: #6D28D9; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-size: 15px; font-weight: 600; color: #0F172A; }
+  .subsection-label { font-size: 11px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; margin-top: 4px; }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  label.field-label { display: block; font-size: 13px; color: #475569; margin-bottom: 5px; font-weight: 500; }
+  input[type=text], input[type=date], select, textarea {
+    width: 100%; font-size: 14px; font-family: inherit; color: #0F172A;
+    border: 1px solid #CBD5E1; border-radius: 8px; padding: 9px 12px;
+    background: #fff; transition: border-color .15s;
+    appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+  textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+  .inline-field { display: flex; align-items: center; gap: 16px; justify-content: space-between; margin-bottom: 10px; }
+  .inline-field .field-label-inline { font-size: 13px; color: #334155; flex: 1; }
+  .radio-row { display: flex; gap: 14px; flex-shrink: 0; }
+  .radio-opt { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; color: #334155; white-space: nowrap; }
+  .radio-opt input[type=radio] { width: 16px; height: 16px; accent-color: #7C3AED; cursor: pointer; }
+
+  .sub { margin-left: 12px; margin-top: 8px; padding: 10px 14px; border-left: 3px solid #DDD6FE; border-radius: 0 8px 8px 0; background: #FAFAFF; display: none; }
+  .sub.visible { display: block; }
+
+  /* Técnicas administradas */
+  .tecnicas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .check-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 8px; cursor: pointer; transition: border-color .15s, background .15s; font-size: 14px; color: #334155; }
+  .check-card:hover { border-color: #A78BFA; background: #FAFAFF; }
+  .check-card input[type=checkbox] { width: 16px; height: 16px; accent-color: #7C3AED; cursor: pointer; flex-shrink: 0; }
+  .check-card.checked { border-color: #7C3AED; background: #F5F3FF; color: #5B21B6; }
+
+  /* Examen funciones psíquicas */
+  .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .exam-item label.field-label { font-size: 12px; color: #64748B; }
+  .exam-item select { font-size: 13px; padding: 7px 32px 7px 10px; }
+
+  /* Conclusión */
+  .conclusion-preview { background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #5B21B6; line-height: 1.6; margin-top: 10px; display: none; }
+  .conclusion-preview.no { background: #FFF7ED; border-color: #FED7AA; color: #9A3412; }
+  .conclusion-preview.visible { display: block; }
+
+  /* Feedback */
+  .feedback-section { background: #EBF4FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .feedback-section label.field-label { color: #1E40AF; }
+  .rating-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+  .rating-opt { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .rating-opt input { width: 18px; height: 18px; accent-color: #1A56DB; }
+  .rating-opt span { font-size: 22px; }
+  .rating-opt small { font-size: 11px; color: #64748B; }
+
+  .actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn-cancel { background: none; border: 1px solid #CBD5E1; border-radius: 8px; padding: 10px 22px; font-size: 14px; font-family: inherit; cursor: pointer; color: #64748B; font-weight: 500; }
+  .btn-cancel:hover { background: #F8FAFC; }
+  .btn-save { background: #7C3AED; border: none; border-radius: 8px; padding: 10px 28px; font-size: 14px; font-family: inherit; cursor: pointer; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .btn-save:hover { background: #6D28D9; }
+  .btn-save:disabled { background: #C4B5FD; cursor: not-allowed; }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3, .grid4, .exam-grid, .tecnicas-grid { grid-template-columns: 1fr; }
+    .inline-field { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-link">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Volver al inicio
+  </a>
+
+  <div class="header">
+    <div class="header-top">
+      <span class="badge">Psicodiagnóstico</span>
+      <span class="proto-badge">Prototipo · validación</span>
+    </div>
+    <h1>Psicodiagnóstico laboral</h1>
+    <p>Nueva prestación · Evaluación psicodiagnóstica en el contexto de baja laboral</p>
+  </div>
+
+  <form id="main-form" action="https://formspree.io/f/xgodrpqk" method="POST">
+
+    <!-- SECCIÓN 1: DATOS DEL COLABORADOR -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <span class="section-title">Datos del colaborador</span>
+      </div>
+      <div class="grid2">
+        <div class="field"><label class="field-label">Nombre</label><input type="text" name="nombre" placeholder="Ingrese nombre"></div>
+        <div class="field"><label class="field-label">Apellido</label><input type="text" name="apellido" placeholder="Ingrese apellido"></div>
+      </div>
+      <div class="grid4">
+        <div class="field"><label class="field-label">DNI</label><input type="text" name="dni" placeholder="00.000.000"></div>
+        <div class="field"><label class="field-label">Fecha de nacimiento</label><input type="text" name="fecha_nac" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label class="field-label">Edad</label><input type="text" name="edad" placeholder="Años"></div>
+        <div class="field"><label class="field-label">Antigüedad</label><input type="text" name="antiguedad" placeholder="Años en empresa"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label class="field-label">Empresa</label><input type="text" name="empresa" placeholder="Nombre empresa"></div>
+        <div class="field"><label class="field-label">Puesto de trabajo</label><input type="text" name="puesto" placeholder="Cargo"></div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: ENTREVISTA -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <span class="section-title">Entrevista</span>
+      </div>
+
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="field"><label class="field-label">Fecha de la baja laboral (mm/aa)</label><input type="text" name="fecha_baja" placeholder="01/25"></div>
+        <div class="field"><label class="field-label">Diagnóstico presentado</label><input type="text" name="diagnostico_presentado" placeholder="Diagnóstico de derivación"></div>
+      </div>
+
+      <div class="field"><label class="field-label">Antecedentes psicopatológicos</label><textarea name="antecedentes_psicopatologicos" placeholder="Describa los antecedentes..."></textarea></div>
+
+      <div class="subsection-label" style="margin-top:4px">Antecedentes</div>
+
+      <div class="inline-field">
+        <span class="field-label-inline">¿Las adquisiciones evolutivas se dieron en tiempo y forma?</span>
+        <div class="radio-row"><label class="radio-opt"><input type="radio" name="adq_evolutivas" value="Sí"> Sí</label><label class="radio-opt"><input type="radio" name="adq_evolutivas" value="No"> No</label></div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">Antecedente de enfermedad clínica</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="enf_clinica" value="Sí" onchange="toggleSub('det_enf',true)"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="enf_clinica" value="No" onchange="toggleSub('det_enf',false)"> No</label>
+        </div>
+      </div>
+      <div class="sub" id="det_enf"><div class="field"><label class="field-label">Especificar antecedente</label><input type="text" name="enf_clinica_detalle" placeholder="Detalle la enfermedad clínica"></div></div>
+
+      <div class="inline-field">
+        <span class="field-label-inline">¿Realizó tratamiento psicológico previo a la licencia?</span>
+        <div class="radio-row"><label class="radio-opt"><input type="radio" name="trat_psicologico" value="Sí"> Sí</label><label class="radio-opt"><input type="radio" name="trat_psicologico" value="No"> No</label></div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Realizó tratamiento psiquiátrico previo a la baja?</span>
+        <div class="radio-row"><label class="radio-opt"><input type="radio" name="trat_psiquiatrico" value="Sí"> Sí</label><label class="radio-opt"><input type="radio" name="trat_psiquiatrico" value="No"> No</label></div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Está atravesando situación de duelo?</span>
+        <div class="radio-row"><label class="radio-opt"><input type="radio" name="duelo" value="Sí"> Sí</label><label class="radio-opt"><input type="radio" name="duelo" value="No"> No</label></div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Fuma?</span>
+        <div class="radio-row"><label class="radio-opt"><input type="radio" name="fuma" value="Sí"> Sí</label><label class="radio-opt"><input type="radio" name="fuma" value="No"> No</label></div>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Consume alcohol?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="alcohol" value="Sí" onchange="toggleSub('det_alc',true)"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="alcohol" value="No" onchange="toggleSub('det_alc',false)"> No</label>
+        </div>
+      </div>
+      <div class="sub" id="det_alc"><div class="field"><label class="field-label">Especificar detalle del consumo</label><input type="text" name="alcohol_detalle" placeholder="Frecuencia y cantidad"></div></div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Consume drogas?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="drogas" value="Sí" onchange="toggleSub('det_drogas',true)"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="drogas" value="No" onchange="toggleSub('det_drogas',false)"> No</label>
+        </div>
+      </div>
+      <div class="sub" id="det_drogas"><div class="field"><label class="field-label">Especificar detalle del consumo</label><input type="text" name="drogas_detalle" placeholder="Tipo y frecuencia"></div></div>
+
+      <div class="field" style="margin-top:10px"><label class="field-label">Plan farmacológico indicado</label><input type="text" name="plan_farmacologico" placeholder="Fármacos y dosis actuales"></div>
+    </div>
+
+    <!-- SECCIÓN 3: TÉCNICAS ADMINISTRADAS -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <span class="section-title">Técnicas administradas</span>
+      </div>
+      <div class="tecnicas-grid">
+        <label class="check-card" onclick="toggleCard(this)">
+          <input type="checkbox" name="tecnica_bender" value="Sí">
+          Test Gestáltico visomotor de Bender
+        </label>
+        <label class="check-card" onclick="toggleCard(this)">
+          <input type="checkbox" name="tecnica_funciones" value="Sí">
+          Examen de las funciones psíquicas
+        </label>
+        <label class="check-card" onclick="toggleCard(this)">
+          <input type="checkbox" name="tecnica_entrevista" value="Sí">
+          Entrevista semiestructurada
+        </label>
+        <label class="check-card" onclick="toggleCard(this)">
+          <input type="checkbox" name="tecnica_persona_lluvia" value="Sí">
+          Persona Bajo Lluvia
+        </label>
+        <label class="check-card" onclick="toggleCard(this)">
+          <input type="checkbox" name="tecnica_htp" value="Sí">
+          House-Tree-Person (HTP)
+        </label>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: EXAMEN DE FUNCIONES PSÍQUICAS -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <span class="section-title">Examen de las funciones psíquicas</span>
+      </div>
+      <div class="exam-grid">
+        <div class="exam-item field"><label class="field-label">Presentación</label><select name="presentacion"><option value="">Seleccionar</option><option>Adecuada</option><option>Descuidada</option><option>Extravagante</option></select></div>
+        <div class="exam-item field"><label class="field-label">Aspecto</label><select name="aspecto"><option value="">Seleccionar</option><option>Conservado</option><option>Deteriorado</option></select></div>
+        <div class="exam-item field"><label class="field-label">Actitud</label><select name="actitud"><option value="">Seleccionar</option><option>Colaboradora</option><option>Oposicionista</option><option>Indiferente</option></select></div>
+        <div class="exam-item field"><label class="field-label">Socioadaptación</label><select name="socioadaptacion"><option value="">Seleccionar</option><option>Adecuada</option><option>Inadecuada</option></select></div>
+        <div class="exam-item field"><label class="field-label">Orientación</label><select name="orientacion"><option value="">Seleccionar</option><option>Conservada</option><option>Desorientado/a</option></select></div>
+        <div class="exam-item field"><label class="field-label">Juicio</label><select name="juicio"><option value="">Seleccionar</option><option>Conservado</option><option>Alterado</option></select></div>
+        <div class="exam-item field"><label class="field-label">Inteligencia</label><select name="inteligencia"><option value="">Seleccionar</option><option>Conservada</option><option>Limítrofe</option></select></div>
+        <div class="exam-item field"><label class="field-label">Atención</label><select name="atencion"><option value="">Seleccionar</option><option>Conservada</option><option>Disminuida</option><option>Aumentada</option></select></div>
+        <div class="exam-item field"><label class="field-label">Consciencia</label><select name="consciencia"><option value="">Seleccionar</option><option>Lúcido/a</option><option>Obnubilado/a</option></select></div>
+        <div class="exam-item field"><label class="field-label">Memoria</label><select name="memoria"><option value="">Seleccionar</option><option>Conservada</option><option>Alterada</option></select></div>
+        <div class="exam-item field"><label class="field-label">Imaginación</label><select name="imaginacion"><option value="">Seleccionar</option><option>Normal</option><option>Aumentada</option><option>Disminuida</option></select></div>
+        <div class="exam-item field"><label class="field-label">Afectividad</label><select name="afectividad"><option value="">Seleccionar</option><option>Eutimia</option><option>Depresión</option><option>Euforia</option><option>Ansiedad</option></select></div>
+        <div class="exam-item field"><label class="field-label">Asociación de ideas</label><select name="asociacion_ideas"><option value="">Seleccionar</option><option>Normal</option><option>Alterada</option></select></div>
+        <div class="exam-item field"><label class="field-label">Lenguaje y autopercepción</label><select name="lenguaje_autoperc"><option value="">Seleccionar</option><option>Normal</option><option>Bradilalia</option><option>Taquilalia</option><option>Mutismo</option></select></div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 5: CONCLUSIÓN -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <span class="section-title">Conclusión</span>
+      </div>
+      <div class="inline-field">
+        <span class="field-label-inline">¿Está en condiciones de volver a trabajar?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="apto_trabajar" value="Sí" onchange="updateConclusion()"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="apto_trabajar" value="No" onchange="updateConclusion()"> No</label>
+        </div>
+      </div>
+      <div class="inline-field" id="mismo-puesto-row" style="display:none">
+        <span class="field-label-inline">¿Está en condiciones de volver a trabajar en el mismo puesto?</span>
+        <div class="radio-row">
+          <label class="radio-opt"><input type="radio" name="apto_mismo_puesto" value="Sí"> Sí</label>
+          <label class="radio-opt"><input type="radio" name="apto_mismo_puesto" value="No"> No</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Diagnóstico</label>
+        <select name="diagnostico" onchange="updateConclusion()">
+          <option value="">Seleccionar</option>
+          <option value="Sin diagnóstico compatible">Sin diagnóstico compatible</option>
+          <option value="Trastorno delirante (F22)">Trastorno delirante (F22)</option>
+          <option value="Trastorno psicótico breve (F23)">Trastorno psicótico breve (F23)</option>
+          <option value="Trastorno Esquizofreniforme (F20.81)">Trastorno Esquizofreniforme (F20.81)</option>
+          <option value="Esquizofrenia (F20.9)">Esquizofrenia (F20.9)</option>
+          <option value="Trastorno de desregulación destructiva del estado de ánimo (F34.8)">Trastorno de desregulación destructiva del estado de ánimo (F34.8)</option>
+          <option value="Trastorno depresivo persistente (F34.1)">Trastorno depresivo persistente (F34.1)</option>
+          <option value="Otro trastorno depresivo especificado (F32.8)">Otro trastorno depresivo especificado (F32.8)</option>
+          <option value="Otro trastorno depresivo no especificado (F32.9)">Otro trastorno depresivo no especificado (F32.9)</option>
+          <option value="Trastorno de ansiedad por separación (F93.0)">Trastorno de ansiedad por separación (F93.0)</option>
+          <option value="Trastorno de ansiedad social — fobia social (F40.10)">Trastorno de ansiedad social — fobia social (F40.10)</option>
+          <option value="Trastorno de pánico (F41.0)">Trastorno de pánico (F41.0)</option>
+          <option value="Trastorno de ansiedad generalizada (F41.1)">Trastorno de ansiedad generalizada (F41.1)</option>
+          <option value="Trastorno obsesivo-compulsivo (F42)">Trastorno obsesivo-compulsivo (F42)</option>
+          <option value="Trastorno adaptativo (F43.2)">Trastorno adaptativo (F43.2)</option>
+          <option value="Trastorno dismórfico corporal (F45.22)">Trastorno dismórfico corporal (F45.22)</option>
+          <option value="Otros trastornos">Otros trastornos</option>
+        </select>
+      </div>
+      <div class="field"><label class="field-label">Aclaración</label><textarea name="aclaracion" placeholder="Ingrese aquí el detalle..."></textarea></div>
+      <div class="conclusion-preview" id="concl-preview"></div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="feedback-section">
+      <div class="section-head" style="border-color:#BFDBFE">
+        <div class="section-num" style="background:#DBEAFE;color:#1D4ED8">💬</div>
+        <span class="section-title" style="color:#1D4ED8">Tu opinión sobre este formulario</span>
+      </div>
+      <div class="field"><label class="field-label">¿Qué campos o secciones te resultaron confusos o incompletos?</label><textarea name="feedback_confuso" placeholder="Ej: falta un campo de observaciones por técnica, las opciones del examen son insuficientes..."></textarea></div>
+      <div class="field"><label class="field-label">¿Falta algún dato importante para tu trabajo diario?</label><textarea name="feedback_faltante" placeholder="Ej: debería haber un campo de integración de resultados, espacio para adjuntar protocolos..."></textarea></div>
+      <div class="field">
+        <label class="field-label">¿Cómo calificarías la claridad general del formulario?</label>
+        <div class="rating-row">
+          <label class="rating-opt"><input type="radio" name="claridad" value="1 — Muy confuso"><span>😕</span><small>Muy confuso</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="2 — Regular"><span>😐</span><small>Regular</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="3 — Claro"><span>🙂</span><small>Claro</small></label>
+          <label class="rating-opt"><input type="radio" name="claridad" value="4 — Muy claro"><span>😀</span><small>Muy claro</small></label>
+        </div>
+      </div>
+      <div class="field"><label class="field-label">Tu nombre o rol (opcional)</label><input type="text" name="evaluador_nombre" placeholder="Ej: Lic. Martínez — Psicóloga laboral"></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-cancel" onclick="if(confirm('¿Cancelar?')) history.back()">Cancelar</button>
+      <button type="submit" class="btn-save" id="btn-submit">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar evaluación
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+function toggleSub(id, show) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('visible', show);
+}
+function toggleCard(label) {
+  setTimeout(function() {
+    label.classList.toggle('checked', label.querySelector('input').checked);
+  }, 0);
+}
+function updateConclusion() {
+  var diag = document.querySelector('select[name="diagnostico"]').value;
+  var volver = document.querySelector('input[name="apto_trabajar"]:checked');
+  var box = document.getElementById('concl-preview');
+  var mismoPuesto = document.getElementById('mismo-puesto-row');
+  box.className = 'conclusion-preview';
+  box.textContent = '';
+  if (!volver) return;
+  if (volver.value === 'Sí') {
+    mismoPuesto.style.display = '';
+    if (diag === 'Sin diagnóstico compatible') {
+      box.textContent = 'No impresiona presentar sintomatología psicopatológica nomenclada en el DSM. Actualmente está en condiciones de reincorporarse a la actividad laboral.';
+    } else if (diag) {
+      box.textContent = 'Actualmente está en condiciones de reincorporarse a la actividad laboral.';
+    }
+  } else {
+    mismoPuesto.style.display = 'none';
+    box.textContent = 'A partir de la evaluación, el paciente no se encuentra en condiciones de retomar su actividad laboral.';
+    box.classList.add('no');
+  }
+  if (box.textContent) box.classList.add('visible');
+}
+document.getElementById('main-form').addEventListener('submit', function() {
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+});
+</script>
+</body>
+</html>
